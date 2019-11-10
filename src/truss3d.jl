@@ -20,8 +20,13 @@ function FEMBase.assemble_elements!(problem::Problem{Truss}, assembly::Assembly,
 
         c = v_e ./ L;
 
-        E = element("youngs modulus", time)
-        A = element("cross-section area", time)
+        if haskey(element, "spring stiffness")
+            stiff = element("spring stiffness", time)
+        else
+            E = element("youngs modulus", time)
+            A = element("cross-section area", time)
+            stiff = E*A
+        end
 
         # Assemble stiffness matrix
 
@@ -32,7 +37,7 @@ function FEMBase.assemble_elements!(problem::Problem{Truss}, assembly::Assembly,
             Ke[i+3,j+3] = c[i]*c[j]
         end
 
-        Ke .*= E*A/L
+        Ke .*= stiff/L
 
         gdofs = get_gdofs(problem, element)
         add!(assembly.K, gdofs, gdofs, Ke)
