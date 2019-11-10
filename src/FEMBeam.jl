@@ -27,4 +27,7 @@ export Beam2D
 include("beam3d.jl")
 export Beam
 
+include("truss3d.jl")
+export Truss
+
 end
